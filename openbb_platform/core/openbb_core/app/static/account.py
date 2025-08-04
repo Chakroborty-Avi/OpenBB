@@ -40,7 +40,6 @@ class Account:  # noqa: D205, D400
         """Human readable representation of the object."""
         return self.__doc__ or ""
 
-    @staticmethod
     def _log_account_command(func):  # pylint: disable=E0213
         """Log account command."""
 
