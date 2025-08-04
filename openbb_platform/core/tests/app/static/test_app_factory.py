@@ -2,7 +2,7 @@
 
 # pylint: disable=redefined-outer-name
 
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 import pytest
 from openbb_core.app.model.hub.hub_session import HubSession
@@ -46,13 +46,10 @@ def test_app_account(app_factory):
     assert isinstance(account, Account)
 
 
-# flake8: noqa: S106
-def test_app_account_login(app_factory, mocker):
+# flake8: noqa: S106 # pylint: disable=W0212
+@patch("openbb_core.app.static.account.HubService", autospec=True)
+def test_app_account_login(mock_hub_service, app_factory):
     """Test app account login."""
-    # Mock the HubService and its methods
-    mock_hub_service = mocker.patch(
-        "openbb_core.app.static.account.HubService", autospec=True
-    )
     mock_hub_service.return_value.pull.return_value = UserSettings()
     mock_hub_service.return_value.connect.return_value = None
 
@@ -64,10 +61,9 @@ def test_app_account_login(app_factory, mocker):
         email="test@example.com",
         primary_usage="mock_usage",
     )
-    mocker.patch.object(
-        mock_hub_service.return_value, "_session", mock_session, create=True
-    )
-    type(mock_hub_service.return_value).session = mocker.PropertyMock(
+    # We need to mock the _session attribute and session property on the HubService instance
+    mock_hub_service.return_value._session = mock_session
+    type(mock_hub_service.return_value).session = PropertyMock(
         return_value=mock_session
     )
 
