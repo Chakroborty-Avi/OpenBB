@@ -13,13 +13,18 @@ jobs:
       #     mode: minimum
       #     count: 1
       #     labels: "guides, bug, build, docker, docs, feat XS, feat S, feat M, feat L, feat XL, help wanted, refactor, tests, dependencies, release"
-      - uses: mheap/github-action-required-labels@v1
-        with:
-          mode: exactly
-          count: 0
-          labels: "do not merge"
+    - uses: mheap/github-action-required-labels@v1
+      with:
+        mode: exactly
+        count: 0
+        labels: "do not merge"
 
-      - name: 🏷️ Label OpenBB Platform PRs
-        uses: srvaroa/labeler@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: 🏷️ Label OpenBB Platform PRs
+      uses: srvaroa/labeler@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload strace artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: strace-logs-${{ github.job }}-${{ matrix.flavor || 'lint' }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index || 0 }}
+        path: /home/runner/strace_logs/
